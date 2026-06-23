@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from blog import views as blog_views
 
+# ✅ NUEVO: Importamos lo necesario para archivos multimedia
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     
@@ -29,3 +33,7 @@ urlpatterns = [
     path('accounts/', include('users.urls')),
     path('users/', include('users.urls')),
 ]
+
+# ✅ NUEVO: Agregamos la ruta para servir las imágenes en modo desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

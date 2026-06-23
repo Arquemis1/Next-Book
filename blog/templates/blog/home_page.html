@@ -354,7 +354,7 @@ header {
   transition: transform .42s cubic-bezier(.4,0,.2,1);
 }
 
-/* BOOK CARD - ✅ MODIFICADA PARA DATOS REALES */
+/* BOOK CARD - ✅ MODIFICADA PARA MOSTRAR PORTADA */
 .bcard {
   min-width: 172px;
   flex-shrink: 0;
@@ -376,6 +376,13 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ✅ Estilo para imagen de portada */
+.bcard-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .bcard-cover svg {
@@ -645,12 +652,11 @@ footer {
         {% endif %}
        ▾</button>
       <div class="user-dropdown" id="menuPerfil">
-        <!-- ✅ ENLACE CORRECTO: Coincide con tu urls.py name='mi_perfil' -->
-        <a href="{% url 'blog:mi_perfil' %}">Mi Perfil</a>
+        <a href="{% url 'blog:perfil_usuario' %}">Mi Perfil</a>
         <a href="#">Mensajes</a>
         <a href="#">Mis Historias</a>
         {% if es_administrador %}
-        <a href="{% url 'blog:panel_admin' %}">⚙️ Panel de Administración</a>
+        <a href="{% url 'blog:panel_administrador' %}">⚙️ Panel de Administración</a>
         {% endif %}
         <a href="/accounts/logout/" id="enlaceCerrar">Cerrar sesión</a>
       </div>
@@ -753,21 +759,23 @@ footer {
     <div class="carousel-track-wrap">
       <div class="carousel-track" id="track">
         
-        <!-- ✅ AQUÍ ES DONDE SE MUESTRAN TUS LIBROS REALES DE LA BASE DE DATOS -->
+        <!-- ✅ LIBROS CON PORTADA -->
         {% for libro in libros %}
         <a href="{% url 'blog:perfil_libro' libro.id_libro %}" class="bcard">
           <div class="bcard-cover">
-            <!-- Icono por defecto si no tienes imagen -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
+            {% if libro.portada %}
+              <img src="{{ libro.portada.url }}" alt="Portada de {{ libro.titulo }}">
+            {% else %}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            {% endif %}
             <div class="bcard-cover-overlay"></div>
             <span class="bcard-badge">{{ libro.estado|default:"Libro" }}</span>
           </div>
           <div class="bcard-info">
             <div class="bcard-title">{{ libro.titulo }}</div>
-            <!-- ✅ ENLACE AL PERFIL DEL AUTOR (CORREGIDO PARA TU ESTRUCTURA) -->
             {% for autor_link in libro.autorlibro_set.all %}
               {% if autor_link.usuario and autor_link.usuario.perfil %}
                 <a href="{% url 'blog:perfil_usuario' autor_link.usuario.id %}" class="bcard-author">
@@ -787,7 +795,6 @@ footer {
           </div>
         </a>
         {% empty %}
-        <!-- Si no hay libros -->
         <p style="color:var(--muted); padding: 20px;">Aún no hay libros publicados.</p>
         {% endfor %}
 
@@ -831,18 +838,16 @@ footer {
 </footer>
 
 <script>
-// ✅ El carrusel sigue funcionando igual, pero ahora usa tus libros
 const track = document.getElementById('track');
 const dotsContainer = document.getElementById('dots');
 const prevBtn = document.getElementById('prev');
 const nextBtn = document.getElementById('next');
 
 let currentIndex = 0;
-let visibleCards = 4; // Valor por defecto, se ajusta en móvil
+let visibleCards = 4;
 let cardWidth = 0;
 let gap = 16;
 
-// Calcular cuántas tarjetas se ven
 function updateVisibleCards() {
   if (window.innerWidth < 768) visibleCards = 2;
   else if (window.innerWidth < 1024) visibleCards = 3;
@@ -854,22 +859,18 @@ function updateVisibleCards() {
   updateCarousel();
 }
 
-// Mover el carrusel
 function updateCarousel() {
   const offset = -currentIndex * (cardWidth + gap);
   track.style.transform = `translateX(${offset}px)`;
   
-  // Actualizar dots
   document.querySelectorAll('.c-dot').forEach((d,i) => {
     d.classList.toggle('active', i === currentIndex);
   });
   
-  // Desactivar flechas si llega al final
   prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
   nextBtn.style.opacity = currentIndex >= track.children.length - visibleCards ? '0.3' : '1';
 }
 
-// Eventos
 prevBtn.onclick = () => {
   if (currentIndex > 0) {
     currentIndex--;
@@ -884,7 +885,6 @@ nextBtn.onclick = () => {
   }
 };
 
-// Crear dots
 for(let i=0; i<Math.ceil(track.children.length / visibleCards); i++) {
   const d = document.createElement('button');
   d.className = 'c-dot';
@@ -892,32 +892,27 @@ for(let i=0; i<Math.ceil(track.children.length / visibleCards); i++) {
   dotsContainer.appendChild(d);
 }
 
-// Responsive
 window.addEventListener('resize', updateVisibleCards);
 window.addEventListener('load', updateVisibleCards);
 
 
-// ✅ FUNCIONALIDAD DEL MENÚ DE USUARIO
 document.addEventListener("DOMContentLoaded", function() {
   const botonUsuario = document.getElementById("botonUsuario");
   const menuPerfil = document.getElementById("menuPerfil");
   const enlaceCerrar = document.getElementById("enlaceCerrar");
 
   if (botonUsuario && menuPerfil) {
-    // Abrir / Cerrar menú al hacer clic
     botonUsuario.addEventListener("click", function(e) {
       e.stopPropagation();
       menuPerfil.classList.toggle("mostrar");
     });
 
-    // Cerrar sesión: limpiar localStorage y redirigir
     if (enlaceCerrar) {
       enlaceCerrar.addEventListener("click", function() {
         localStorage.removeItem("usuarioActual");
       });
     }
 
-    // Cerrar menú si se hace clic fuera
     document.addEventListener("click", function() {
       menuPerfil.classList.remove("mostrar");
     });

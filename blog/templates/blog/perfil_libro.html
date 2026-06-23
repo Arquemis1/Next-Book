@@ -38,7 +38,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 5
 
 /* COVER */
 .cover-wrap{flex-shrink:0;width:152px;}
-.cover-3d{width:152px;height:228px;border-radius:4px 10px 10px 4px;display:block;box-shadow:-4px 4px 0 #ffc857, 0 24px 60px rgba(0,0,0,.8);position:relative;background:var(--surface2);display:flex;align-items:center;justify-content:center;}
+.cover-3d{width:152px;height:228px;border-radius:4px 10px 10px 4px;display:block;box-shadow:-4px 4px 0 #ffc857, 0 24px 60px rgba(0,0,0,.8);position:relative;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.cover-3d img{width:100%;height:100%;object-fit:cover;}
 .cover-3d svg{width:50%;height:auto;opacity:0.3;}
 
 .hero-meta{flex:1;max-width:520px;}
@@ -284,14 +285,17 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
   <div class="hero-overlay"></div>
   <div class="hero-content">
 
-    <!-- PORTADA -->
+    <!-- ✅ PORTADA ACTUALIZADA: muestra imagen si existe, sino icono -->
     <div class="cover-wrap">
       <div class="cover-3d">
-        <!-- Icono por defecto -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        </svg>
+        {% if libro.portada %}
+          <img src="{{ libro.portada.url }}" alt="Portada de {{ libro.titulo }}">
+        {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        {% endif %}
       </div>
     </div>
 
@@ -377,7 +381,7 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
             <iframe id="pdfViewer" src="{{ libro.archivo_pdf.url }}" width="100%" height="900px" style="border:none;"></iframe>
           {% else %}
             <div style="padding:40px;text-align:center;color:var(--muted);">
-              <p>El archivo PDF no está disponible actualmente.</p>
+              <p>El contenido no está disponible actualmente.</p>
             </div>
           {% endif %}
         </div>
@@ -392,7 +396,7 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
         {% if user.is_authenticated %}
         <div class="comment-input-row">
           <div class="u-avatar" style="background:linear-gradient(135deg,#2d1b4e,#a78bf7);">
-            {{ user.nombres|first|upper }}
+            {{ user.first_name|first|upper|default:"U" }}
           </div>
           <textarea class="comment-box" id="newComment" placeholder="¿Qué te pareció este libro?"></textarea>
           <button class="c-submit" onclick="submitComment()">Publicar</button>
@@ -417,20 +421,24 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
 
     <!-- AUTOR -->
     <div class="r-card">
-      <a href="{% url 'blog:perfil_usuario' libro.usuario.id_usuario %}" style="text-decoration:none;">
-        <div class="auth-avatar">{{ libro.usuario.nombres|first|upper }}</div>
-        <div class="auth-name">{{ libro.usuario.nombres }} {{ libro.usuario.apellidos }}</div>
-        <div class="auth-dates">@{{ libro.usuario.nombre_usuario }}</div>
+      {% if autor %}
+      <a href="{% url 'blog:perfil_usuario' autor.id %}" style="text-decoration:none;">
+        <div class="auth-avatar">{{ autor.nombre|first|upper }}</div>
+        <div class="auth-name">{{ autor.nombre }} {{ autor.apellido }}</div>
+        <div class="auth-dates">@{{ autor.perfil.username|default:"" }}</div>
       </a>
-      <div class="auth-bio">{{ libro.usuario.biografia|default:"Este autor no ha escrito su biografía."|truncatechars:100 }}</div>
+      <div class="auth-bio">{{ autor.perfil.descripcion|default:"Este autor no ha escrito su biografía."|truncatechars:100 }}</div>
       
       <div class="auth-stats">
-        <div><div class="as-num">{{ libro.usuario.libro_set.count|default:0 }}</div><div class="as-lbl">Libros</div></div>
+        <div><div class="as-num">{{ AutorLibro.objects.filter(usuario=autor).count }}</div><div class="as-lbl">Libros</div></div>
         <div><div class="as-num">4.9★</div><div class="as-lbl">Valoración</div></div>
       </div>
       
-      {% if user.id_usuario != libro.usuario.id_usuario and user.is_authenticated %}
+      {% if user.id != autor.id and user.is_authenticated %}
       <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Seguir autor</button>
+      {% endif %}
+      {% else %}
+      <p style="color:var(--muted);text-align:center;">Autor no disponible</p>
       {% endif %}
     </div>
 
@@ -440,27 +448,13 @@ footer{border-top:1px solid var(--border);padding:28px 5%;display:flex;justify-c
       <div class="info-row"><div class="info-key">Título</div><div class="info-val">{{ libro.titulo }}</div></div>
       <div class="info-row"><div class="info-key">Publicación</div><div class="info-val">{{ libro.fecha_creacion|date:"d F, Y" }}</div></div>
       <div class="info-row"><div class="info-key">Estado</div><div class="info-val">{{ libro.estado }}</div></div>
-      <div class="info-row"><div class="info-key">Categoría</div><div class="info-val">{{ libro.categoria.nombre|default:"Sin categoría" }}</div></div>
       <div class="info-row"><div class="info-key">ID Libro</div><div class="info-val">#{{ libro.id_libro }}</div></div>
     </div>
 
     <!-- LIBROS SIMILARES -->
     <div class="r-card">
       <div class="r-card-title">También te puede gustar</div>
-      {% for libro_similar in libros_similares %}
-      <a href="{% url 'blog:perfil_libro' libro_similar.id_libro %}" class="sim-book" style="text-decoration:none;">
-        <div class="sim-cov">
-          <svg viewBox="0 0 40 60"><rect width="40" height="60" fill="#1a0d14"/><circle cx="20" cy="22" r="12" fill="#c8940a" opacity=".5"/><circle cx="20" cy="22" r="7" fill="#ffc857" opacity=".7"/><rect x="4" y="48" width="32" height="4" rx="2" fill="#e8e8f0" opacity=".6"/></svg>
-        </div>
-        <div class="sim-i">
-          <div class="sim-t">{{ libro_similar.titulo }}</div>
-          <div class="sim-a">@{{ libro_similar.usuario.nombre_usuario }}</div>
-          <div class="sim-r">★★★★★ 4.7</div>
-        </div>
-      </a>
-      {% empty %}
-      <p style="color:var(--muted); font-size:.8rem;">No hay recomendaciones por ahora.</p>
-      {% endfor %}
+      <p style="color:var(--muted); font-size:.8rem; text-align:center;">No hay recomendaciones por ahora.</p>
     </div>
 
   </div><!-- /right-col -->

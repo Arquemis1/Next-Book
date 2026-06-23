@@ -19,7 +19,6 @@
   --muted:    #6b6b80;
   --muted2:   #3a3a48;
 
-  /* la hoja de papel: el único lugar donde el tema se vuelve cálido */
   --paper:       #f4efe2;
   --paper-edge:  #e9e1cc;
   --paper-text:  #2b2620;
@@ -96,17 +95,17 @@ header {
 .btn-solid:disabled { background: var(--muted2); color: var(--muted); cursor: not-allowed; }
 
 /* ── EDITOR SHELL ───────────────────────── */
+/* Ajuste de columnas para que el editor sea más ancho */
 .editor-shell {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 32px;
-  max-width: 1280px;
+  grid-template-columns: 220px 1fr 280px;
+  gap: 24px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 36px 5% 80px;
+  padding: 36px 3% 80px;
   align-items: start;
 }
 
-/* meta: titulo + genero */
 .meta-block { margin-bottom: 24px; }
 
 .title-input {
@@ -123,7 +122,7 @@ header {
 }
 .title-input::placeholder { color: var(--muted2); }
 
-.meta-row { display:flex; align-items:center; gap: 14px; flex-wrap: wrap; }
+.meta-row { display:flex; align-items:center; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
 
 .chapter-input {
   background: var(--surface2);
@@ -162,6 +161,72 @@ header {
   border-radius: 100px;
   border: 1px solid var(--border);
   color: var(--muted);
+}
+
+/* ── SECCIÓN PORTADA ────────────────────── */
+.cover-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.cover-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.cover-upload {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all .2s;
+  background: rgba(0,0,0,.15);
+  position: relative;
+  overflow: hidden;
+}
+.cover-upload:hover {
+  border-color: var(--accent);
+  background: rgba(200,240,110,.05);
+}
+.cover-upload svg {
+  width: 32px;
+  height: 32px;
+  color: var(--muted);
+}
+.cover-upload span {
+  font-size: .78rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.4;
+}
+.cover-upload input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.cover-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: none;
 }
 
 /* ── TOOLBAR ────────────────────────────── */
@@ -245,6 +310,7 @@ header {
   line-height: 1.85;
   outline: none;
   position: relative;
+  width: 100%;
 }
 
 .manuscript-page::before {
@@ -291,7 +357,6 @@ header {
 .manuscript-page ul, .manuscript-page ol { padding-left: 28px; margin-bottom: .9em; }
 .manuscript-page a { color: #5c7a2e; text-decoration: underline; }
 
-/* footer bar bajo la hoja: conteo de palabras */
 .page-footer {
   display: flex;
   justify-content: space-between;
@@ -308,7 +373,7 @@ header {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 22px;
+  padding: 18px;
   margin-bottom: 18px;
 }
 
@@ -319,7 +384,7 @@ header {
   letter-spacing: .04em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .chapter-list { display:flex; flex-direction:column; gap:6px; }
@@ -336,9 +401,28 @@ header {
 .chapter-item:hover { background: var(--surface2); }
 .chapter-item.active { background: rgba(200,240,110,.08); border-color: rgba(200,240,110,.3); }
 
+.chapter-info { display: flex; flex-direction: column; gap: 2px; }
 .chapter-item-label { font-size: .85rem; color: var(--text); font-weight: 500; }
 .chapter-item.active .chapter-item-label { color: var(--accent); }
 .chapter-item-meta { font-size: .72rem; color: var(--muted); }
+
+.chapter-actions { display: flex; gap: 6px; }
+.btn-delete-chapter {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,80,80,.15);
+  color: #ff7070;
+  cursor: pointer;
+  display: grid; place-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all .15s;
+}
+.btn-delete-chapter:hover {
+  background: rgba(255,80,80,.3);
+  color: #ffffff;
+}
 
 .add-chapter-btn {
   margin-top: 10px;
@@ -397,11 +481,16 @@ header {
 .toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 1200px) {
+  .editor-shell { grid-template-columns: 200px 1fr 260px; gap: 20px; }
+}
 @media (max-width: 980px) {
+  .editor-shell { grid-template-columns: 220px 1fr; }
+  aside { grid-column: 1 / -1; }
+}
+@media (max-width: 768px) {
   .editor-shell { grid-template-columns: 1fr; }
   .header-center { display: none; }
-}
-@media (max-width: 600px) {
   .manuscript-page { padding: 40px 26px; }
   .title-input { font-size: 1.5rem; }
   .toolbar { top: 0; }
@@ -411,7 +500,6 @@ header {
 </head>
 <body>
 
-<!-- ── NAVBAR ──────────────────────────── -->
 <header>
   <a class="logo" href="{% url 'blog:welcome' %}">
     <div class="logo-mark">
@@ -435,22 +523,38 @@ header {
   </div>
 
   <div class="nav-actions">
-    <button class="btn-ghost" id="previewBtn">Vista previa</button>
-    <button class="btn-solid" id="publishBtn">Publicar</button>
+    <button type="button" class="btn-ghost" id="previewBtn">Vista previa</button>
+    <button type="button" class="btn-solid" id="publishBtn">Publicar</button>
   </div>
 </header>
 
-<!-- ── FORMULARIO PARA GUARDAR EN LA BASE ──────────────────────────── -->
-<form method="POST" action="{% url 'blog:guardar_libro' %}" id="formPublicar">
+<!-- Formulario -->
+<form method="POST" action="{% url 'blog:guardar_libro' %}" id="formPublicar" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" name="titulo" id="inputTitulo">
     <input type="hidden" name="sinopsis" id="inputSinopsis">
     <input type="hidden" name="contenido" id="inputContenido">
+    <!-- Campo para la imagen de portada -->
+    <input type="file" name="portada" id="inputPortada" accept="image/*" style="display: none;">
 
-<!-- ── EDITOR ──────────────────────────── -->
 <div class="editor-shell">
+  <!-- COLUMNA IZQUIERDA: PORTADA -->
+  <div>
+    <div class="cover-card">
+      <h3 class="cover-title">Portada de la historia</h3>
+      <label class="cover-upload" for="inputPortada">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <path d="M21 15l-5-5L5 21"/>
+        </svg>
+        <span>Haz clic para subir<br>imagen de portada</span>
+        <img class="cover-preview" id="coverPreview" src="" alt="Vista previa portada">
+      </label>
+    </div>
+  </div>
 
-  <!-- MAIN: meta + toolbar + page -->
+  <!-- COLUMNA CENTRAL: EDITOR (ahora más ancha) -->
   <div>
     <div class="meta-block">
       <input type="text" class="title-input" id="storyTitle" placeholder="Título de tu historia" maxlength="120">
@@ -473,13 +577,13 @@ header {
       </div>
     </div>
 
-    <!-- TOOLBAR -->
+    <!-- Barra de herramientas -->
     <div class="toolbar" id="toolbar">
       <div class="tb-group">
-        <button class="tb-btn" data-cmd="undo" title="Deshacer">
+        <button type="button" class="tb-btn" data-action="undo" title="Deshacer">
           <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
         </button>
-        <button class="tb-btn" data-cmd="redo" title="Rehacer">
+        <button type="button" class="tb-btn" data-action="redo" title="Rehacer">
           <svg viewBox="0 0 24 24"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
         </button>
       </div>
@@ -506,38 +610,38 @@ header {
           <option value="'DM Sans'">DM Sans</option>
         </select>
         <select class="tb-select" id="sizeSelect" title="Tamaño de letra">
-          <option value="14">14</option>
-          <option value="16">16</option>
-          <option value="18" selected>18</option>
-          <option value="20">20</option>
-          <option value="24">24</option>
-          <option value="28">28</option>
-          <option value="32">32</option>
+          <option value="14px">14</option>
+          <option value="16px">16</option>
+          <option value="18px" selected>18</option>
+          <option value="20px">20</option>
+          <option value="24px">24</option>
+          <option value="28px">28</option>
+          <option value="32px">32</option>
         </select>
       </div>
 
       <div class="tb-divider"></div>
 
       <div class="tb-group">
-        <button class="tb-btn glyph-b" data-cmd="bold" title="Negrita (Ctrl+B)">B</button>
-        <button class="tb-btn glyph-i" data-cmd="italic" title="Cursiva (Ctrl+I)">I</button>
-        <button class="tb-btn glyph-u" data-cmd="underline" title="Subrayado (Ctrl+U)">U</button>
-        <button class="tb-btn glyph-s" data-cmd="strikeThrough" title="Tachado">S</button>
+        <button type="button" class="tb-btn glyph-b" data-action="bold" title="Negrita (Ctrl+B)">B</button>
+        <button type="button" class="tb-btn glyph-i" data-action="italic" title="Cursiva (Ctrl+I)">I</button>
+        <button type="button" class="tb-btn glyph-u" data-action="underline" title="Subrayado (Ctrl+U)">U</button>
+        <button type="button" class="tb-btn glyph-s" data-action="strikeThrough" title="Tachado">S</button>
       </div>
 
       <div class="tb-divider"></div>
 
       <div class="tb-group">
-        <button class="tb-btn" data-cmd="justifyLeft" title="Alinear a la izquierda">
+        <button type="button" class="tb-btn" data-action="alignLeft" title="Alinear a la izquierda">
           <svg viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
         </button>
-        <button class="tb-btn" data-cmd="justifyCenter" title="Centrar">
+        <button type="button" class="tb-btn" data-action="alignCenter" title="Centrar">
           <svg viewBox="0 0 24 24"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
         </button>
-        <button class="tb-btn" data-cmd="justifyRight" title="Alinear a la derecha">
+        <button type="button" class="tb-btn" data-action="alignRight" title="Alinear a la derecha">
           <svg viewBox="0 0 24 24"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
         </button>
-        <button class="tb-btn" data-cmd="justifyFull" title="Justificar">
+        <button type="button" class="tb-btn" data-action="alignJustify" title="Justificar">
           <svg viewBox="0 0 24 24"><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
         </button>
       </div>
@@ -545,19 +649,18 @@ header {
       <div class="tb-divider"></div>
 
       <div class="tb-group">
-        <button class="tb-btn-text" data-cmd="insertUnorderedList" title="Lista con viñetas">• Lista</button>
-        <button class="tb-btn-text" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+        <button type="button" class="tb-btn-text" data-action="insertUnorderedList" title="Lista con viñetas">• Lista</button>
+        <button type="button" class="tb-btn-text" data-action="insertOrderedList" title="Lista numerada">1. Lista</button>
       </div>
 
       <div class="tb-divider"></div>
 
       <div class="tb-group">
-        <button class="tb-btn-text" id="linkBtn" title="Insertar enlace">Enlace</button>
-        <button class="tb-btn-text" id="clearFormatBtn" title="Borrar formato">Borrar formato</button>
+        <button type="button" class="tb-btn-text" id="linkBtn" title="Insertar enlace">Enlace</button>
+        <button type="button" class="tb-btn-text" id="clearFormatBtn" title="Borrar formato">Borrar formato</button>
       </div>
     </div>
 
-    <!-- THE PAGE -->
     <div class="desk">
       <div class="manuscript-page"
            id="editor"
@@ -575,12 +678,12 @@ header {
     </div>
   </div>
 
-  <!-- ASIDE -->
+  <!-- COLUMNA DERECHA: CAPÍTULOS -->
   <aside>
     <div class="aside-card">
       <div class="aside-title">Capítulos</div>
       <div class="chapter-list" id="chapterList"></div>
-      <button class="add-chapter-btn" id="addChapterBtn">+ Añadir capítulo</button>
+      <button type="button" class="add-chapter-btn" id="addChapterBtn">+ Añadir capítulo</button>
     </div>
 
     <div class="aside-card">
@@ -601,20 +704,61 @@ header {
 </form>
 
 <script>
-/* ───────────────────────────────────────────
-   Estado de la historia (en memoria, sin servidor)
-   ─────────────────────────────────────────── */
 let chapters = [
   { id: 1, title: 'Capítulo 1', html: '' }
 ];
 let currentChapterId = 1;
 let chapterCounter = 1;
+let undoStack = [];
+let redoStack = [];
+const MAX_HISTORY = 50;
 
 const editor = document.getElementById('editor');
 const chapterTitleInput = document.getElementById('chapterTitleInput');
 const chapterListEl = document.getElementById('chapterList');
 
-/* ── Construir / refrescar lista de capítulos ── */
+// Vista previa de portada
+const inputPortada = document.getElementById('inputPortada');
+const coverPreview = document.getElementById('coverPreview');
+inputPortada.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      coverPreview.src = ev.target.result;
+      coverPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+function saveState() {
+  const currentState = editor.innerHTML;
+  if (undoStack.length === 0 || undoStack[undoStack.length - 1] !== currentState) {
+    undoStack.push(currentState);
+    if (undoStack.length > MAX_HISTORY) undoStack.shift();
+    redoStack = [];
+  }
+}
+
+function undo() {
+  if (undoStack.length > 1) {
+    redoStack.push(undoStack.pop());
+    editor.innerHTML = undoStack[undoStack.length - 1];
+    updateCounts();
+    markSaving();
+  }
+}
+
+function redo() {
+  if (redoStack.length > 0) {
+    undoStack.push(redoStack.pop());
+    editor.innerHTML = undoStack[undoStack.length - 1];
+    updateCounts();
+    markSaving();
+  }
+}
+
 function renderChapterList() {
   chapterListEl.innerHTML = '';
   chapters.forEach(ch => {
@@ -622,9 +766,18 @@ function renderChapterList() {
     item.className = 'chapter-item' + (ch.id === currentChapterId ? ' active' : '');
     const words = plainTextWordCount(ch.html);
     item.innerHTML = `
-      <span class="chapter-item-label">${escapeHtml(ch.title)}</span>
-      <span class="chapter-item-meta">${words} palabras</span>`;
-    item.addEventListener('click', () => switchChapter(ch.id));
+      <div class="chapter-info">
+        <span class="chapter-item-label">${escapeHtml(ch.title)}</span>
+        <span class="chapter-item-meta">${words} palabras</span>
+      </div>
+      <div class="chapter-actions">
+        <button type="button" class="btn-delete-chapter" title="Eliminar capítulo">×</button>
+      </div>`;
+    item.querySelector('.chapter-info').addEventListener('click', () => switchChapter(ch.id));
+    item.querySelector('.btn-delete-chapter').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteChapter(ch.id);
+    });
     chapterListEl.appendChild(item);
   });
   document.getElementById('statChapters').textContent = chapters.length;
@@ -650,20 +803,38 @@ function getCurrentChapter() {
 }
 
 function switchChapter(id) {
-  // guarda el capítulo actual antes de cambiar
   const cur = getCurrentChapter();
   if (cur) cur.html = editor.innerHTML;
 
   currentChapterId = id;
   const next = getCurrentChapter();
   editor.innerHTML = next.html || '';
+  saveState();
   chapterTitleInput.value = next.title;
   toggleEmptyState();
   updateCounts();
   renderChapterList();
 }
 
-document.getElementById('addChapterBtn').addEventListener('click', () => {
+function deleteChapter(id) {
+  if (chapters.length <= 1) {
+    showToast('No puedes borrar el único capítulo que existe');
+    return;
+  }
+  if (!confirm('¿Seguro que quieres eliminar este capítulo? No se puede deshacer.')) return;
+
+  chapters = chapters.filter(c => c.id !== id);
+  if (currentChapterId === id) {
+    switchChapter(chapters[0].id);
+  } else {
+    renderChapterList();
+    markSaving();
+  }
+  showToast('Capítulo eliminado');
+}
+
+document.getElementById('addChapterBtn').addEventListener('click', (e) => {
+  e.preventDefault();
   const cur = getCurrentChapter();
   if (cur) cur.html = editor.innerHTML;
 
@@ -681,86 +852,136 @@ chapterTitleInput.addEventListener('input', () => {
   markSaving();
 });
 
-/* ───────────────────────────────────────────
-   Barra de herramientas
-   ─────────────────────────────────────────── */
-document.querySelectorAll('.tb-btn[data-cmd], .tb-btn-text[data-cmd]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    editor.focus();
-    document.execCommand(btn.dataset.cmd, false, null);
-    updateToolbarState();
-    markSaving();
+function applyFormat(type, value = null) {
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+
+  const range = sel.getRangeAt(0);
+  const selectedText = range.toString();
+
+  switch(type) {
+    case 'bold':
+      document.execCommand('bold', false, null);
+      break;
+    case 'italic':
+      document.execCommand('italic', false, null);
+      break;
+    case 'underline':
+      document.execCommand('underline', false, null);
+      break;
+    case 'strikeThrough':
+      document.execCommand('strikeThrough', false, null);
+      break;
+    case 'alignLeft':
+      document.execCommand('justifyLeft', false, null);
+      break;
+    case 'alignCenter':
+      document.execCommand('justifyCenter', false, null);
+      break;
+    case 'alignRight':
+      document.execCommand('justifyRight', false, null);
+      break;
+    case 'alignJustify':
+      document.execCommand('justifyFull', false, null);
+      break;
+    case 'insertUnorderedList':
+      document.execCommand('insertUnorderedList', false, null);
+      break;
+    case 'insertOrderedList':
+      document.execCommand('insertOrderedList', false, null);
+      break;
+    case 'formatBlock':
+      document.execCommand('formatBlock', false, value);
+      break;
+    case 'fontSize':
+      if (selectedText) {
+        const span = document.createElement('span');
+        span.style.fontSize = value;
+        range.surroundContents(span);
+      }
+      break;
+    case 'fontName':
+      if (selectedText) {
+        const span = document.createElement('span');
+        span.style.fontFamily = value;
+        range.surroundContents(span);
+      }
+      break;
+    case 'createLink':
+      const url = prompt('Ingresa la URL:');
+      if (url) document.execCommand('createLink', false, url);
+      break;
+    case 'removeFormat':
+      document.execCommand('removeFormat', false, null);
+      break;
+  }
+
+  saveState();
+  updateToolbarState();
+  markSaving();
+}
+
+document.querySelectorAll('.tb-btn[data-action], .tb-btn-text[data-action]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const action = btn.dataset.action;
+    if (action === 'undo') undo();
+    else if (action === 'redo') redo();
+    else applyFormat(action);
   });
 });
 
 document.getElementById('blockSelect').addEventListener('change', (e) => {
-  editor.focus();
-  document.execCommand('formatBlock', false, e.target.value);
-  markSaving();
+  e.preventDefault();
+  applyFormat('formatBlock', e.target.value);
 });
 
 document.getElementById('fontSelect').addEventListener('change', (e) => {
-  editor.focus();
-  document.execCommand('fontName', false, e.target.value);
-  markSaving();
+  e.preventDefault();
+  applyFormat('fontName', e.target.value);
 });
 
-/* Truco clásico para tamaños de fuente personalizados con execCommand:
-   se aplica un tamaño "legacy" y luego se reemplaza por un span con px reales. */
 document.getElementById('sizeSelect').addEventListener('change', (e) => {
-  editor.focus();
-  document.execCommand('fontSize', false, '7');
-  editor.querySelectorAll('font[size="7"]').forEach(el => {
-    el.removeAttribute('size');
-    el.style.fontSize = e.target.value + 'px';
-  });
-  markSaving();
+  e.preventDefault();
+  applyFormat('fontSize', e.target.value);
 });
 
-document.getElementById('linkBtn').addEventListener('click', () => {
-  const url = prompt('Pega la URL del enlace:');
-  if (url) {
-    editor.focus();
-    document.execCommand('createLink', false, url);
-  }
-  markSaving();
+document.getElementById('linkBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  applyFormat('createLink');
 });
 
-document.getElementById('clearFormatBtn').addEventListener('click', () => {
-  editor.focus();
-  document.execCommand('removeFormat', false, null);
-  document.execCommand('formatBlock', false, 'P');
-  markSaving();
+document.getElementById('clearFormatBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  applyFormat('removeFormat');
 });
 
-/* Reflejar el estado actual de la selección en los botones */
 function updateToolbarState() {
-  const map = {
-    bold: 'bold', italic: 'italic', underline: 'underline', strikeThrough: 'strikeThrough',
-    justifyLeft: 'justifyLeft', justifyCenter: 'justifyCenter', justifyRight: 'justifyRight', justifyFull: 'justifyFull',
-    insertUnorderedList: 'insertUnorderedList', insertOrderedList: 'insertOrderedList'
+  if (document.activeElement !== editor) return;
+  const states = {
+    bold: document.queryCommandState('bold'),
+    italic: document.queryCommandState('italic'),
+    underline: document.queryCommandState('underline'),
+    strikeThrough: document.queryCommandState('strikeThrough'),
+    alignLeft: document.queryCommandState('justifyLeft'),
+    alignCenter: document.queryCommandState('justifyCenter'),
+    alignRight: document.queryCommandState('justifyRight'),
+    alignJustify: document.queryCommandState('justifyFull'),
+    insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+    insertOrderedList: document.queryCommandState('insertOrderedList')
   };
-  document.querySelectorAll('[data-cmd]').forEach(btn => {
-    const cmd = btn.dataset.cmd;
-    if (map[cmd]) {
-      try { btn.classList.toggle('active', document.queryCommandState(cmd)); }
-      catch (e) { /* algunos comandos no soportan queryCommandState fuera de foco */ }
-    }
+
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    const action = btn.dataset.action;
+    if (states.hasOwnProperty(action)) btn.classList.toggle('active', states[action]);
   });
-  try {
-    const block = (document.queryCommandValue('formatBlock') || '').toUpperCase();
-    const select = document.getElementById('blockSelect');
-    if (['P','H1','H2','H3','BLOCKQUOTE'].includes(block)) select.value = block;
-  } catch (e) {}
 }
 
 document.addEventListener('selectionchange', () => {
   if (document.activeElement === editor) updateToolbarState();
 });
 
-/* ───────────────────────────────────────────
-   Conteo de palabras / tiempo de lectura
-   ─────────────────────────────────────────── */
 function updateCounts() {
   const text = (editor.textContent || '').trim();
   const words = text ? text.split(/\s+/).length : 0;
@@ -771,13 +992,10 @@ function updateCounts() {
 }
 
 function toggleEmptyState() {
-  const isEmpty = editor.innerHTML.trim() === '' || editor.innerHTML.trim() === '<br>';
+  const isEmpty = !editor.textContent.trim() && editor.innerHTML.replace(/<br\s*\/?>/gi, '').trim() === '';
   editor.classList.toggle('is-empty', isEmpty);
 }
 
-/* ───────────────────────────────────────────
-   Autoguardado simulado (sin backend todavía)
-   ─────────────────────────────────────────── */
 let saveTimer = null;
 function markSaving() {
   const statusEl = document.getElementById('saveStatus');
@@ -799,6 +1017,7 @@ function markSaving() {
 editor.addEventListener('input', () => {
   toggleEmptyState();
   updateCounts();
+  saveState();
   markSaving();
 });
 
@@ -806,10 +1025,8 @@ document.getElementById('storyTitle').addEventListener('input', markSaving);
 document.getElementById('genreSelect').addEventListener('change', markSaving);
 document.getElementById('synopsis').addEventListener('input', markSaving);
 
-/* ───────────────────────────────────────────
-   Botones de cabecera
-   ─────────────────────────────────────────── */
-document.getElementById('publishBtn').addEventListener('click', () => {
+document.getElementById('publishBtn').addEventListener('click', (e) => {
+  e.preventDefault();
   const title = document.getElementById('storyTitle').value.trim();
   if (!title) {
     showToast('Dale un título a tu historia antes de publicar.');
@@ -817,16 +1034,27 @@ document.getElementById('publishBtn').addEventListener('click', () => {
     return;
   }
 
-  // ✅ PASAMOS LOS DATOS AL FORMULARIO OCULTO PARA ENVIAR A DJANGO
+  const cur = getCurrentChapter();
+  if (cur) cur.html = editor.innerHTML;
+
+  let contenidoFinal = '';
+  chapters.forEach((cap, index) => {
+    if (cap.html.trim()) {
+      contenidoFinal += `<h3>${cap.title}</h3>`;
+      contenidoFinal += cap.html;
+      contenidoFinal += '<hr>';
+    }
+  });
+
   document.getElementById('inputTitulo').value = document.getElementById('storyTitle').value;
   document.getElementById('inputSinopsis').value = document.getElementById('synopsis').value;
-  document.getElementById('inputContenido').value = editor.innerHTML;
+  document.getElementById('inputContenido').value = contenidoFinal;
 
-  // Enviamos el formulario
   document.getElementById('formPublicar').submit();
 });
 
-document.getElementById('previewBtn').addEventListener('click', () => {
+document.getElementById('previewBtn').addEventListener('click', (e) => {
+  e.preventDefault();
   showToast('Vista previa: así verán los lectores este capítulo.');
 });
 
@@ -839,8 +1067,24 @@ function showToast(msg) {
   setTimeout(() => { t.classList.remove('toast-show'); setTimeout(() => t.remove(), 400); }, 3000);
 }
 
-/* ── Inicialización ── */
+document.addEventListener('keydown', (e) => {
+  if (document.activeElement === editor) {
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      switch(e.key.toLowerCase()) {
+        case 'b': e.preventDefault(); applyFormat('bold'); break;
+        case 'i': e.preventDefault(); applyFormat('italic'); break;
+        case 'u': e.preventDefault(); applyFormat('underline'); break;
+        case 'z': e.preventDefault(); undo(); break;
+        case 'y': e.preventDefault(); redo(); break;
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault(); redo();
+    }
+  }
+});
+
 chapterTitleInput.value = getCurrentChapter().title;
+saveState();
 toggleEmptyState();
 updateCounts();
 renderChapterList();

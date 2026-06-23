@@ -69,15 +69,18 @@ def subir_libro(request):
 
 
 # ------------------------------
-# ✅ NUEVA VISTA: GUARDAR LIBRO EN LA BASE DE DATOS (CORREGIDA)
+# ✅ NUEVA VISTA: GUARDAR LIBRO EN LA BASE DE DATOS (ACTUALIZADA CON PORTADA)
 # ------------------------------
 @login_required
 def guardar_libro(request):
     if request.method == 'POST':
-        # 1. Recibir los datos enviados desde el formulario oculto del editor
+        # 1. Recibir los datos enviados desde el formulario
         titulo = request.POST.get('titulo', 'Sin título').strip()
-        sinopsis = request.POST.get('sinopsis', '').strip()  # ✅ Coincide con tu modelo
-        contenido = request.POST.get('contenido', '')        # ✅ Texto del editor
+        sinopsis = request.POST.get('sinopsis', '').strip()
+        contenido = request.POST.get('contenido', '')
+
+        # ✅ NUEVO: Recibir la imagen de portada si se envió
+        portada = request.FILES.get('portada')
 
         # Validación básica
         if not titulo:
@@ -91,25 +94,25 @@ def guardar_libro(request):
             return redirect('blog:welcome')
 
         # 3. CREAR EL NUEVO LIBRO
-        # ✅ SOLO usamos campos que EXISTEN en tu modelo Libro
         nuevo_libro = Libro.objects.create(
             titulo=titulo,
-            sinopsis=sinopsis,                # ✅ Campo correcto de tu modelo
+            sinopsis=sinopsis,
             fecha_creacion=timezone.now(),
             estado='publicado',
-            archivo_pdf=contenido             # ✅ Guardamos el texto en este campo (es TextField)
+            archivo_pdf=contenido,
+            # ✅ NUEVO: Asignar la imagen si existe
+            portada=portada
         )
 
-        # 4. CREAR LA RELACIÓN AUTOR <-> LIBRO (¡IMPORTANTE!)
-        # ✅ AGREGADO el campo ROL que es OBLIGATORIO en tu modelo AutorLibro
+        # 4. CREAR LA RELACIÓN AUTOR <-> LIBRO
         AutorLibro.objects.create(
             usuario=usuario_actual,
             libro=nuevo_libro,
-            rol='Autor'                       # ✅ Sin esto daba error de campo nulo
+            rol='Autor'
         )
 
-        # 5. Redirigir al HOME
-        return redirect('blog:home')
+        # 5. Redirigir al perfil del libro para verlo completo
+        return redirect('blog:perfil_libro', libro_id=nuevo_libro.id_libro)
 
     return redirect('blog:subir_libro')
 

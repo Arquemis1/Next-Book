@@ -16,7 +16,7 @@ app_name = 'blog'
 urlpatterns = [
     # Páginas principales
     path('', welcome_view, name='welcome'),
-    path('inicio/', home_page, name='home'),
+   path('home/', home_page, name='home'),
     
     # Libros
     path('subir-libro/', subir_libro, name='subir_libro'),  # ✅ Ruta corregida

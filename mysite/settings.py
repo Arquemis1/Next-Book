@@ -130,3 +130,7 @@ LOGIN_REDIRECT_URL = '/home/'
 
 # Redirección después de cerrar sesión (opcional, para que vuelva al inicio)
 LOGOUT_REDIRECT_URL = 'welcome'
+
+# ✅ NUEVO: Configuración para archivos multimedia (imágenes de portada)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

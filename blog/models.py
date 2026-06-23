@@ -17,7 +17,7 @@ class Usuario(models.Model):
     id = models.BigAutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=20, blank=True, null=True) # <-- Agregado porque lo usas en views
+    telefono = models.CharField(max_length=20, blank=True, null=True)
     direccion = models.CharField(max_length=255, blank=True, null=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
     registro = models.OneToOneField(Registro, models.DO_NOTHING, blank=True, null=True)
@@ -50,7 +50,15 @@ class Libro(models.Model):
     sinopsis = models.TextField(blank=True, null=True)
     fecha_creacion = models.DateTimeField(blank=True, null=True)
     estado = models.CharField(max_length=50, blank=True, null=True)
-    archivo_pdf = models.TextField(blank=True, null=True)  # <-- Cambiado a TextField para aguantar el texto largo del editor
+    archivo_pdf = models.TextField(blank=True, null=True)
+
+    # 👇 CAMPO NUEVO PARA LA PORTADA
+    portada = models.ImageField(
+        upload_to='portadas/',          # Carpeta donde se guardarán las imágenes
+        blank=True,
+        null=True,
+        verbose_name="Imagen de portada"
+    )
 
     class Meta:
         db_table = 'libro'
